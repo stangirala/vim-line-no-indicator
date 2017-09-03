@@ -9,22 +9,16 @@ endif
 let g:loaded_line_no_indicator = 1
 
 if !exists("g:line_no_indicator_chars")
-  let g:line_no_indicator_chars = ['⎺', '⎻', '⎼', '⎽', '⎯']
+  let g:line_no_indicator_chars = ['~', '⎺', '⎻', '–', '⎼', '⎽', '~']
+  let g:page_fraction_size_per_indicator = 1.0/(len(g:line_no_indicator_chars)-1)
 end
 
 function! LineNoIndicator()
-  " Zero indexed so line 2/3 becomes 1/2 == 50%
-  let l:current_line = line(".") - 1
-  let l:total_lines = line("$") - 1
+  let l:current_line = line(".")
+  let l:total_lines = line("$") + 0.0 " Coerce float
 
-  if l:current_line == 0
-    let l:index = 0
-  elseif l:current_line == l:total_lines
-    let l:index = -1
-  else
-    let l:line_no_fraction = floor(l:current_line) / floor(l:total_lines)
-    let l:index = float2nr(l:line_no_fraction * len(g:line_no_indicator_chars))
-  endif
+  let l:page_fraction_for_current_line= l:current_line/l:total_lines
+  let l:line_indicator_index = float2nr(l:page_fraction_for_current_line/(g:page_fraction_size_per_indicator))
 
-  return g:line_no_indicator_chars[l:index]
+  return g:line_no_indicator_chars[l:line_indicator_index]
 endfunction
